@@ -4,25 +4,11 @@
 -- fuse genres (fuses two genres into one)
 -- adjust genre (changes the name of a genre)
 
--- add artist genre
--- delete artist genre
--- adjust artist genre
-
--- add act genre
--- delete act genre
--- adjust act genre
-
--- add user likes genre
--- delete user likes genre
--- adjust user likes genre (hoeft niet want gebruiker kan liken/unliken)
-
-
-
 -- Add genre
 
 CREATE OR ALTER PROCEDURE SP_addGenre (
 @genreName VARCHAR(50),
-@previousGenreName VARCHAR(50) = NULL
+@parentGenreName VARCHAR(50) = NULL
 )
 AS
 BEGIN
@@ -41,17 +27,17 @@ BEGIN
 			THROW 50000, 'Genre met deze genrenaam bestaat al', 1
 
 		--See if parent genre record exists
-		IF @previousGenreName IS NOT NULL
+		IF @parentGenreName IS NOT NULL
 		BEGIN
-			IF NOT EXISTS(SELECT 1 FROM GENRE WHERE hoofd_genre = @previousGenreName)
+			IF NOT EXISTS(SELECT 1 FROM GENRE WHERE hoofd_genre = @parentGenreName)
 				THROW 50000, 'ouder genre van toe te voegen genre bestaat niet', 1
 
-			IF @genreName = @previousGenreName
+			IF @genreName = @parentGenreName
 				THROW 50000, 'Ouder genre mag niet hetzelfde zijn als toe te voegen genre', 1
 		END
 
 		-- Insert record into database
-		INSERT INTO GENRE(genre_naam, hoofd_genre) VALUES (@genreName, @previousGenreName)
+		INSERT INTO GENRE(genre_naam, hoofd_genre) VALUES (@genreName, @parentGenreName)
 
           COMMIT TRANSACTION
 
@@ -80,7 +66,7 @@ GO
 
 CREATE OR ALTER PROCEDURE SP_delGenre (
 @genre_name VARCHAR(50),
-@change_genre_to VARCHAR(50)
+@change_contents_to VARCHAR(50)
 )
 AS
 BEGIN
@@ -100,14 +86,14 @@ BEGIN
 			
 		
 		  -- check if @change_genre_to is an existing genre
-		  IF NOT EXISTS(SELECT 1 FROM GENRE WHERE genre_naam = @change_genre_to)
+		  IF NOT EXISTS(SELECT 1 FROM GENRE WHERE genre_naam = @change_contents_to)
 				THROW 50000, 'De genre kan niet veranderd worden omdat het alternatief niet bestaat', 1
 
 		
 		  -- Delete user likes
 		  DELETE FROM Gebruiker_vindt_genre_leuk WHERE genre_naam = @genre_name
-		  UPDATE Artiest_heeft_genre SET genre_naam = @change_genre_to WHERE genre_naam = @genre_name
-		  UPDATE Act_heeft_genre SET genre_naam = @change_genre_to WHERE genre_naam = @genre_name
+		  UPDATE Artiest_heeft_genre SET genre_naam = @change_contents_to WHERE genre_naam = @genre_name
+		  UPDATE Act_heeft_genre SET genre_naam = @change_contents_to WHERE genre_naam = @genre_name
 		  DELETE FROM Genre WHERE genre_naam = @genre_name
 
           COMMIT TRANSACTION
