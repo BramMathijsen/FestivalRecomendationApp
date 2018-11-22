@@ -1,4 +1,4 @@
-CREATE PROC pr_alter_gebruiker_gegevens
+CREATE PROC sp_alter_gebruiker_gegevens
 	@gebruikersnaam				varchar(50), 
 	@gebruikers_voornaam		varchar(50)	NULL,
 	@gebruikers_tussenvoegsel	varchar(10)	NULL, 
@@ -33,3 +33,15 @@ BEGIN
 	THROW;
 	END CATCH
 END
+
+-- ===================================================================
+-- Testcase
+-- ===================================================================
+
+--Alleen het email adres aanpassen
+
+EXEC sp_alter_gebruiker_gegevens 'hiddeW', @emailadres = 'hdwoudsma@gmail.com'
+
+--alle gegevens aanpassen
+
+EXEC sp_alter_gebruiker_gegevens 'HiddeDubbelD', 'Hidde', NULL, 'Woudsma', 'Ede', 'wachtwoord', 'hdwoudsma@gmail.com'
