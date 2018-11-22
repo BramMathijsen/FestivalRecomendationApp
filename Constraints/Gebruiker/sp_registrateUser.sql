@@ -1,7 +1,5 @@
 /* 
 	This stored procedure is used to registrate a user.
-
-	TODO SQL-injection
 */
 
 CREATE OR ALTER PROCEDURE SP_registrateUser 
