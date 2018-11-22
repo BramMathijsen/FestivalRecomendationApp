@@ -1,5 +1,14 @@
 CREATE OR ALTER PROCEDURE SP_registrateUser (
-@employeId NUMERIC(4)
+	@username	
+	@residence
+	@country 
+	@firstname
+	@middlename
+	@surname
+	@birthdate	date,
+	@password
+	@email
+	
 )
 AS
 BEGIN
@@ -11,6 +20,14 @@ BEGIN
       	BEGIN TRANSACTION
 
       	SAVE TRANSACTION employeIsActive
+
+		-- Check if (user)name doesn't contains a word that isn't allowed.
+
+
+		-- Insert user into table
+		insert into gebruiker (gebruikersnaam, plaatsnaam, land, gebruikers_voornaam, gebruikers_tussenvoegsel, gebruikers_achternaam, geboortedatum, wachtwoord, emailadres)
+			values (@username, @residence, @country, @firstname, @middlename, @surname, @birthdate, @password, @email)
+
 
 	-- Logica hier
 
@@ -52,6 +69,8 @@ begin
 
 		exec tSQLt.ExpectException 
 		exec SP_registrateUser	@username = 'Forbidden word', 
+								@place = 'Test_place',
+								@country = 'Test_country',
 								@firstname = 'Test_firstname', 
 								@middlename = null,
 								@surname = 'Test_surname',
@@ -70,8 +89,18 @@ begin
 
 		exec tSQLt.FakeTable 'dbo', 'Gebruiker';
 
-		exec tSQLt.ExpectNoException 
-		exec SP_registrateUser	@username = 'Forbidden word', 
+		if OBJECT_ID('[TEST_SP_registrateUser].[verwacht]','Table') IS NOT NULL
+				drop table TEST_SP_registrateUser.expected 
+
+		select top 0 * 
+			into TEST_SP_registrateUser.expected 
+			from dbo.Gebruiker;
+
+		insert into TEST_SP_registrateUser.expected  (gebruikersnaam, plaatsnaam, land, gebruikers_voornaam, gebruikers_tussenvoegsel, gebruikers_achternaam, geboortedatum, wachtwoord, emailadres)
+			values ('Test_user', 'Test_residence', 'Test_country', 'Test_firstname', null, 'Test_surname', '10-10-1996', 'Test_password', 'Test_email')
+
+		exec SP_registrateUser	@username = 'Test_user', 
+								@country = 'Test_country',
 								@firstname = 'Test_firstname', 
 								@middlename = null,
 								@surname = 'Test_surname',
@@ -79,5 +108,7 @@ begin
 								@residence = 'Test_residence',
 								@password = 'Test_password',
 								@email = 'Test_email'
+
+		exec [tSQLt].[AssertEqualsTable] 'TEST_SP_registrateUser.expected ', 'dbo.Gebruiker'
 end
 go
