@@ -69,7 +69,6 @@ begin
 
 		exec tSQLt.ExpectException 
 		exec SP_registrateUser	@username = 'Forbidden word', 
-								@place = 'Test_place',
 								@country = 'Test_country',
 								@firstname = 'Test_firstname', 
 								@middlename = null,
