@@ -5,7 +5,6 @@
 -- adjust genre (changes the name of a genre)
 
 -- Add genre
-
 CREATE OR ALTER PROCEDURE SP_addGenre (
 @genreName VARCHAR(50),
 @parentGenreName VARCHAR(50) = NULL
@@ -63,7 +62,6 @@ GO
 
 -- Delete genre
 -- user can only delete genres that have no child genres
-
 CREATE OR ALTER PROCEDURE SP_delGenre (
 @genre_name VARCHAR(50),
 @change_contents_to VARCHAR(50)
@@ -192,7 +190,6 @@ END
 GO
 
 -- Adjust genre
-
 CREATE OR ALTER PROCEDURE SP_adjustGenre (
 @old_genre_name VARCHAR(50),
 @new_genre_name VARCHAR(50)
