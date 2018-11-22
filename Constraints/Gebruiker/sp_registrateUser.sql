@@ -36,6 +36,10 @@ END
 
 GO
 
+-- Tests ------------
+EXEC tSQLt.NewTestClass 'TEST_SP_registrateUser';
+
+
 -- Test forbidden word
 create or alter procedure test_SP_registrateUser.[test 1 Username contains forbidden word, the user registration should fail.]
 as
