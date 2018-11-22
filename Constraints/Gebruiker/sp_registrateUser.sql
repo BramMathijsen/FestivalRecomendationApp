@@ -1,18 +1,15 @@
-CREATE OR ALTER PROCEDURE SP_registrateUser (
-	@username	
-	@residence
-	@country 
-	@firstname
-	@middlename
-	@surname
-	@birthdate	date,
-	@password
-	@email
-	
-)
+CREATE OR ALTER PROCEDURE SP_registrateUser 
+	@username GEBRUIKERSNAAM,	
+	@residence PLAATSNAAM,
+	@country LAND,
+	@firstname VOORNAAM,
+	@middlename TUSSENVOEGSEL = null,
+	@surname ACHTERNAAM,
+	@birthdate	DATUM,
+	@password WACHTWOORD,
+	@email EMAIL
 AS
 BEGIN
-
 	DECLARE @tranCount INT = @@TRANCOUNT
 
 	BEGIN TRY
