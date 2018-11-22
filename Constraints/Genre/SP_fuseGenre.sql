@@ -71,3 +71,96 @@ END
 
 GO
 -----------Test----------------------------
+EXEC tSQLt.NewTestClass 'TEST_SP_fuseGenre';
+go
+CREATE OR ALTER PROCEDURE [TEST_SP_fuseGenre].[test fusion name already exists (failure)]
+AS
+BEGIN
+
+	EXEC tSQLt.FakeTable 'dbo', 'genre'
+	EXEC tSQLt.FakeTable 'dbo', 'Artiest_heeft_genre'
+	EXEC tSQLt.FakeTable 'dbo', 'Act_heeft_genre'
+	EXEC tSQLt.FakeTable 'dbo', 'Gebruiker_vindt_genre_leuk'
+
+	insert into genre(genre_naam, hoofd_genre)
+	values ('rock', NULL),('prog rock', 'rock'), ('experimentele rock', 'rock'), ('psychedelische rock', 'experimentele rock'), ('house', NULL)
+	
+	insert into Artiest_heeft_genre(genre_naam) VALUES ('rock'),('rock'), ('experimentele rock'), ('house')
+	insert into Act_heeft_genre(genre_naam) VALUES ('rock'),('rock'), ('experimentele rock'), ('house')
+	insert into Gebruiker_vindt_genre_leuk(genre_naam) VALUES ('rock'),('rock'), ('experimentele rock'), ('house'),('rock'),('rock'),('rock'),('rock')
+
+	EXEC tSQLt.ExpectException
+
+	EXEC SP_fuseGenre @genre_name1 = 'rock', @genre_name2 = 'house', @genre_fusion_name = 'house'
+
+END
+go
+
+CREATE OR ALTER PROCEDURE [TEST_SP_fuseGenre].[test genre name 1 doesnt exists (failure)]
+AS
+BEGIN
+
+	EXEC tSQLt.FakeTable 'dbo', 'genre'
+	EXEC tSQLt.FakeTable 'dbo', 'Artiest_heeft_genre'
+	EXEC tSQLt.FakeTable 'dbo', 'Act_heeft_genre'
+	EXEC tSQLt.FakeTable 'dbo', 'Gebruiker_vindt_genre_leuk'
+
+	insert into genre(genre_naam, hoofd_genre)
+	values ('rock', NULL),('prog rock', 'rock'), ('experimentele rock', 'rock'), ('psychedelische rock', 'experimentele rock'), ('house', NULL)
+	
+	insert into Artiest_heeft_genre(genre_naam) VALUES ('rock'),('rock'), ('experimentele rock'), ('house')
+	insert into Act_heeft_genre(genre_naam) VALUES ('rock'),('rock'), ('experimentele rock'), ('house')
+	insert into Gebruiker_vindt_genre_leuk(genre_naam) VALUES ('rock'),('rock'), ('experimentele rock'), ('house'),('rock'),('rock'),('rock'),('rock')
+
+	EXEC tSQLt.ExpectException
+
+	EXEC SP_fuseGenre @genre_name1 = 'jazz', @genre_name2 = 'house', @genre_fusion_name = 'rockjazz'
+
+END
+go
+
+CREATE OR ALTER PROCEDURE [TEST_SP_fuseGenre].[test genre name 2 doesnt exists (failure)]
+AS
+BEGIN
+
+	EXEC tSQLt.FakeTable 'dbo', 'genre'
+	EXEC tSQLt.FakeTable 'dbo', 'Artiest_heeft_genre'
+	EXEC tSQLt.FakeTable 'dbo', 'Act_heeft_genre'
+	EXEC tSQLt.FakeTable 'dbo', 'Gebruiker_vindt_genre_leuk'
+
+	insert into genre(genre_naam, hoofd_genre)
+	values ('rock', NULL),('prog rock', 'rock'), ('experimentele rock', 'rock'), ('psychedelische rock', 'experimentele rock'), ('house', NULL)
+	
+	insert into Artiest_heeft_genre(genre_naam) VALUES ('rock'),('rock'), ('experimentele rock'), ('house')
+	insert into Act_heeft_genre(genre_naam) VALUES ('rock'),('rock'), ('experimentele rock'), ('house')
+	insert into Gebruiker_vindt_genre_leuk(genre_naam) VALUES ('rock'),('rock'), ('experimentele rock'), ('house'),('rock'),('rock'),('rock'),('rock')
+
+	EXEC tSQLt.ExpectException
+
+	EXEC SP_fuseGenre @genre_name1 = 'rock', @genre_name2 = 'jazz', @genre_fusion_name = 'rockjazz'
+
+END
+go
+
+CREATE OR ALTER PROCEDURE [TEST_SP_fuseGenre].[test jazz en techno worden gefusseerd (succes)]
+AS
+BEGIN
+
+	EXEC tSQLt.FakeTable 'dbo', 'genre'
+	EXEC tSQLt.FakeTable 'dbo', 'Artiest_heeft_genre'
+	EXEC tSQLt.FakeTable 'dbo', 'Act_heeft_genre'
+	EXEC tSQLt.FakeTable 'dbo', 'Gebruiker_vindt_genre_leuk'
+
+	insert into genre(genre_naam, hoofd_genre)
+	values ('rock', NULL),('prog rock', 'rock'), ('experimentele rock', 'rock'), ('psychedelische rock', 'experimentele rock'), ('house', NULL)
+	
+	insert into Artiest_heeft_genre(genre_naam) VALUES ('rock'),('rock'), ('experimentele rock'), ('house')
+	insert into Act_heeft_genre(genre_naam) VALUES ('rock'),('rock'), ('experimentele rock'), ('house')
+	insert into Gebruiker_vindt_genre_leuk(genre_naam) VALUES ('rock'),('rock'), ('experimentele rock'), ('house'),('rock'),('rock'),('rock'),('rock')
+
+	EXEC tSQLt.ExpectNoException
+
+	EXEC SP_fuseGenre @genre_name1 = 'techno', @genre_name2 = 'jazz', @genre_fusion_name = 'technojazz'
+
+END
+go

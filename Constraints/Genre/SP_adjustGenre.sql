@@ -17,7 +17,7 @@ BEGIN
 
 		  -- check if new genre already exists
 		  IF EXISTS(SELECT 1 FROM GENRE WHERE genre_naam = @new_genre_name)
-			THROW 50000, 'genre does already exist', 1
+			THROW 50000, 'genre already exists', 1
 
 		 -- check if old genre already exists
 		  IF NOT EXISTS(SELECT 1 FROM GENRE WHERE genre_naam = @old_genre_name)
@@ -48,3 +48,52 @@ END
 
 GO
 -----------Test----------------------------
+EXEC tSQLt.NewTestClass 'TEST_SP_adjustGenre';
+go
+CREATE OR ALTER PROCEDURE [TEST_SP_adjustGenre].[test change existing genre to already existing genre (failure)]
+AS
+BEGIN
+
+	EXEC tSQLt.FakeTable 'dbo', 'genre'
+
+	insert into genre(genre_naam, hoofd_genre)
+	values ('rock', NULL),('prog rock', 'rock'), ('experimentele rock', 'rock'), ('psychedelische rock', 'experimentele rock'), ('house', NULL)
+
+	EXEC tSQLt.ExpectException 
+
+	EXEC SP_adjustGenre @old_genre_name = 'rock', @new_genre_name = 'house'
+
+END
+go
+
+CREATE OR ALTER PROCEDURE [TEST_SP_adjustGenre].[test change non existing genre (failure)]
+AS
+BEGIN
+
+	EXEC tSQLt.FakeTable 'dbo', 'genre'
+
+	insert into genre(genre_naam, hoofd_genre)
+	values ('rock', NULL),('prog rock', 'rock'), ('experimentele rock', 'rock'), ('psychedelische rock', 'experimentele rock'), ('house', NULL)
+
+	EXEC tSQLt.ExpectException 
+
+	EXEC SP_adjustGenre @old_genre_name = 'techno', @new_genre_name = 'jazz'
+
+END
+go
+
+CREATE OR ALTER PROCEDURE [TEST_SP_adjustGenre].[test change rock to jazz (succes)]
+AS
+BEGIN
+
+	EXEC tSQLt.FakeTable 'dbo', 'genre'
+
+	insert into genre(genre_naam, hoofd_genre)
+	values ('rock', NULL),('prog rock', 'rock'), ('experimentele rock', 'rock'), ('psychedelische rock', 'experimentele rock'), ('house', NULL)
+
+	EXEC tSQLt.ExpectNoException 
+
+	EXEC SP_adjustGenre @old_genre_name = 'rock', @new_genre_name = 'jazz'
+
+END
+go
