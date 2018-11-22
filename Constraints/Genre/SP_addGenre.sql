@@ -57,7 +57,7 @@ GO
 -----------Test----------------------------
 EXEC tSQLt.NewTestClass 'TEST_SP_addGenre';
 go
-CREATE OR ALTER PROCEDURE [TEST_SP_addGenre].[]
+CREATE OR ALTER PROCEDURE [TEST_SP_addGenre].[test deleting a parent genre (failure)]
 AS
 BEGIN
 
@@ -73,7 +73,7 @@ BEGIN
 END
 go
 
-CREATE OR ALTER PROCEDURE [TEST_SP_addGenre].[]
+CREATE OR ALTER PROCEDURE [TEST_SP_addGenre].[test adding a genre with the itself as the parent genre (failure)]
 AS
 BEGIN
 
@@ -89,7 +89,7 @@ BEGIN
 END
 go
 
-CREATE OR ALTER PROCEDURE [TEST_SP_addGenre].[]
+CREATE OR ALTER PROCEDURE [TEST_SP_addGenre].[test adding a genre with parent genre that doesn't exist (failure)]
 AS
 BEGIN
 
@@ -105,7 +105,7 @@ BEGIN
 END
 go
 
-CREATE OR ALTER PROCEDURE [TEST_SP_addGenre].[]
+CREATE OR ALTER PROCEDURE [TEST_SP_addGenre].[test adding a subgenre (succes)]
 AS
 BEGIN
 
@@ -121,7 +121,7 @@ BEGIN
 END
 go
 
-CREATE OR ALTER PROCEDURE [TEST_SP_addGenre].[]
+CREATE OR ALTER PROCEDURE [TEST_SP_addGenre].[test adding a hoofdgenre (succes)]
 AS
 BEGIN
 
