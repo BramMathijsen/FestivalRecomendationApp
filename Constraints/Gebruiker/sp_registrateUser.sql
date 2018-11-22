@@ -1,3 +1,9 @@
+/* 
+	This stored procedure is used to registrate a user.
+
+	TODO SQL-injection
+*/
+
 CREATE OR ALTER PROCEDURE SP_registrateUser 
 	@username GEBRUIKERSNAAM,	
 	@residence PLAATSNAAM,
@@ -19,14 +25,17 @@ BEGIN
       	SAVE TRANSACTION employeIsActive
 
 		-- Check if (user)name doesn't contains a word that isn't allowed.
-
+		if exists ( select '' from Filter_Woorden where FILTER_WOORD = @username )
+			begin
+				THROW 50000, 'The username contains a forbidden word! Please change the username', 1
+			end
 
 		-- Insert user into table
 		insert into gebruiker (gebruikersnaam, plaatsnaam, land, gebruikers_voornaam, gebruikers_tussenvoegsel, gebruikers_achternaam, geboortedatum, wachtwoord, emailadres)
 			values (@username, @residence, @country, @firstname, @middlename, @surname, @birthdate, @password, @email)
 
 
-	-- Logica hier
+		-- Logic here
 
       	COMMIT TRANSACTION
 
@@ -60,12 +69,13 @@ as
 begin
 
 		exec tSQLt.FakeTable 'dbo', 'Gebruiker';
-		exec tSQLt.FakeTable 'dbo', 'FilterWoorden'
+		exec tSQLt.FakeTable 'dbo', 'Filter_Woorden'
 
-		insert into dbo.FilterWoorden values ('Forbidden word')
+		insert into dbo.Filter_Woorden values ('Forbidden')
 
 		exec tSQLt.ExpectException 
-		exec SP_registrateUser	@username = 'Forbidden word', 
+			@ExpectedMessage = 'The username contains a forbidden word! Please change the username'
+		exec SP_registrateUser	@username = 'Forbidden', 
 								@country = 'Test_country',
 								@firstname = 'Test_firstname', 
 								@middlename = null,
