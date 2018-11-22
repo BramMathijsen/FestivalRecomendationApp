@@ -23,10 +23,12 @@ BEGIN
       	SAVE TRANSACTION employeIsActive
 
 		-- Check if (user)name doesn't contains a word that isn't allowed.
-		if exists ( select '' from Filter_Woorden where FILTER_WOORD = @username )
+		if exists ( select '' from Filter_Woorden where FILTER_WOORD in (@firstname, @username, @middlename, @surname)  )
 			begin
-				THROW 50000, 'The username contains a forbidden word! Please change the username', 1
+				THROW 50000, 'Your (user)name contains a forbidden word! Please change the (user)name', 1
 			end
+
+
 
 		-- Insert user into table
 		insert into gebruiker (gebruikersnaam, plaatsnaam, land, gebruikers_voornaam, gebruikers_tussenvoegsel, gebruikers_achternaam, geboortedatum, wachtwoord, emailadres)
@@ -72,7 +74,7 @@ begin
 		insert into dbo.Filter_Woorden values ('Forbidden')
 
 		exec tSQLt.ExpectException 
-			@ExpectedMessage = 'The username contains a forbidden word! Please change the username'
+			@ExpectedMessage = 'Your (user)name contains a forbidden word! Please change the (user)name'
 		exec SP_registrateUser	@username = 'Forbidden', 
 								@country = 'Test_country',
 								@firstname = 'Test_firstname', 
