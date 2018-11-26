@@ -18,7 +18,7 @@ BEGIN
 
 	BEGIN TRY
       	BEGIN TRANSACTION
-      	SAVE TRANSACTION employeIsActive
+      	SAVE TRANSACTION sp_registrateUser
 
 		-- Set transaction isolation level, for now (26-11-2018) it's read commited since the only business rule 'Check if (user)name doesn't contains a word that isn't allowed.'
 		-- cannot be broken via a non-repeateable read or phantom.
@@ -116,7 +116,7 @@ begin
 								@residence = 'Test_residence',
 								@password = 'Test_password',
 								@email = 'Test_email'
-		select * from dbo.Gebruiker
+
 		exec [tSQLt].[AssertEqualsTable] 'TEST_SP_registrateUser.expected ', 'dbo.Gebruiker'
 end
 go
